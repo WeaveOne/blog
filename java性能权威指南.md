@@ -67,9 +67,37 @@ jvisualvm
 
    2. `jinfo -flag PrintGCDetails PID` 查看单个标志的值 `-XX: +PrintGCDetails`
 
-      `jinfo -flag PrintGCDetails PID # turn off PrintGCDetails` 修改标志位的值(只对标记为`manageable`的标志有效)
+      `jinfo -flag -PrintGCDetails PID 修改标志位的值(只对标记为`manageable`的标志有效)
 
 ### jconsole
 
 描述：提供jvm活动的图形化视图，线程的使用、类的使用、GC活动
+
+### JIT编译器
+
+1. C1 client 编译器  C2 server编译器 没有被编译执行就是解释执行（只有相对热点数据被编译执行）
+
+   c1编译器在前期比c2编译器快。后期则是C2 后期C2可以进行编译优化，所以提前编译不会被优化
+
+2. 分层编译，必须是server 属性：-xx:+TieredComplilation 一般为最佳选择
+
+#### 调优代码缓存
+
+1. client编译和分层编译可能填满代码缓存器。
+2. -xx:ReservedCodeCacheSize 可以设置代码缓存区大小；ps：并不是越大越好代码缓存设为1GB则jvm就会保留1GB内存空间，虽说是需要时才分配但是他任然是被保留的，意思是及其必须有1g内存空间存在
+3. jconsole 的内存面板中的 code cache可以监控
+
+#### 编译阈值
+
+1. 编译基于两种jvm计数器：方法调用计数器和方法中的循环回边计数器（看做循环完成的次数）
+2. 栈上替换（OSR）：jvm在循环进行时也能进行编译循环。编译结束后，jvm替换还在栈上的代码，循环的下一次迭代就会执行快得多的编译代码
+3. 阈值：-XX:CompileThreshold = N触发
+4. OSR trigger = (CompileThreshold * ((OnStatckReplacePercentage - InterpreterProfilePercentage)/100))
+   1. ,默认值：OnStatckReplacePercentage  servcer：140 client:933
+   2. 默认值：InterpreterProfilePercentage  33
+5. 计数器会周期性减少，所以执行时间越长并不会导致所有代码都会被编译，执行次数少的代码可能永远都不会被编译
+
+#### 检测编译过程
+
+1. -XX:+PrintCompilation  开启编译打印，每当编译发生时打印一条记录
 
