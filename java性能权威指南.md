@@ -325,6 +325,10 @@ jvisualvm
 
       jvm没有原生内存可用，跟堆无关
 
+      错误信息：
+
+      `Exception in thread "main" java.lang.OutOfMemoryError unable to create new native thread`
+
    2. 永久代或元空间内存不足
 
       与堆无关，有两种情况：
@@ -332,4 +336,47 @@ jvisualvm
       1. 应用使用的类太多，超出了永久代的默认容纳范围。解决方案是增加永久代的大小（元空间也如此）
       2. 涉及类加载器的内存泄漏，常出现出javaEE应用服务器中
 
+      错误信息：
+
+      `Exception in thread "main" java.lang.OutOfMemoryError: Metaspace`
+
    3. 堆内存不足
+
+      错误消息：
+
+      `Exception in thread "main" java.lang.OutOfMemoryError: java heap space`
+
+      1. 自动堆转储`-XX:+HeapDumpOnOutOfMemoryError`默认为false，打开会自动在抛出`OutOfMemoryError`是创建堆转储`-XX:HeapDumpPath=<path>`该标志制定写入位置。默认会在当前工作目录下生成`java_pod<pid>.hprof`文件
+      2. `-XX:+HeapDumpAfterFullGC`运行一次FullGC后生成一个堆转储文件
+      3. `-XX:+HeapDumpBeforeFullGC`FullGC之前生成
+
+   4. 达到GC的开销限制
+
+      错误信息：
+
+      `Exception in thread "main" java.lang.OutOfMemoryError: GC overhead limit exceeded`
+
+      1. 花在FullGC上的时间超出了-XX：GCTimeLimit=N标志指定的值，默认为98，意思为 如果98%的时间花在GC上，则该条件满足
+      2. 一次FullGC回收的内存量少于`-XX:GCHeapFreeLimit=N`标志指定的值。默认值为2，意思是：如果FullGC期间释放的内存不足堆的2%，则该条件满足
+      3. 上面两个条件连续5ciFullGC都成立（这个数值无法调整）
+      4. `-XX:+UseGCOverhead-Limit`标志的值为true（默认true）
+
+      上面四个条件必须都满足。
+
+5. 减少内存使用
+
+   1. 减少对象大小，最简单的方式就是让对象小一些。下面是两种方式：
+      1. 减少实例变量的个数（效果明显）
+      2. 减少实例变量的小（不明显）
+   2. 引用对象64位中占8个字节 32位占四个字节
+   3. 去掉对象中的实例字段，有助于减少对象的大小
+
+6. 延迟初始化
+
+   1. 如果操作使用不频繁，那延迟初始化最合适。如果很常用，实际没有节省内存，而又有轻微的性能损失
+   2. 只有当初始化这些字段的几率很低时，延迟初始化才有性能方面的好处。如果一般情况下都会初始化这些字段，那实际上也不会节省内存。
+   3. 避免过时引用 参考`ArrayList() remove` 方法，可以主动地将其设置为null
+   4. 小结
+      1. 只有当常用的代码路径不会初始化某个变量时，才去考虑延迟初始化改变量
+      2. 一般不会再存在线程安全的代码上引入延迟出初始化，这样会加重现有的同步成本
+      3. 如果使用了线程安全的对象，应该使用双重检查锁。并配置`volatile`关键字
