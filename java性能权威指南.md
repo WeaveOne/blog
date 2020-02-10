@@ -1,4 +1,11 @@
-# java性能权威指南
+title: "java性能权威指南"
+date: 2019-07-28 10:48:16
+categories: jvm
+tags: [java,jvm]
+
+----
+
+
 
 ##  操作系统的工具和分析
 
@@ -30,6 +37,8 @@ jstat
 #见识jvm的gui工具
 jvisualvm
 ```
+
+<!-- more -->
 
 ### jcmd
 

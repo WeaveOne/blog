@@ -1,4 +1,11 @@
-# MongoDB命令及其MongoTemplate的混合讲解
+title: "MongoDB命令及其MongoTemplate的混合讲解"
+date: 2019-07-28 10:48:16
+categories: 数据库
+tags: [mongodb]
+
+----
+
+
 
 ## 前言
 
@@ -17,7 +24,7 @@ mongoDB所存储的数据以键值对的方式存储
 MongoTemplate mongoTemplate;
 ```
 
-
+<!-- more -->
 
 ## 1. 创建数据库
 

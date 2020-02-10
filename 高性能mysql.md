@@ -1,4 +1,11 @@
-## 高性能mysql
+title: "高性能mysql"
+date: 2019-07-28 10:48:16
+categories: mysql
+tags: [数据库, mysql]
+
+----
+
+
 
 ### ALTER 
 
@@ -14,10 +21,15 @@ ALTER COLUMN xxx SET  DEFAULT 5
 1. 以下操作是有可能不需要重建表的
 
    1. 移除（非增加）一个列的AUTO_INCREMENT属性
+   
    2. 增加、移除或更改ENUM和SET常亮。如果移除的是已经有行数据用到其值的常量，查询将返回一个空串
-   3. 基本技术是创建一个新的.frm文件然后替换原来的
+   
+3. 基本技术是创建一个新的.frm文件然后替换原来的
+   
+      <!-- more -->
+   
    4. 思路
-
+   
    ```sql
    #创建新表
    CREATE TABLE xxx_new like xxx
@@ -28,14 +40,14 @@ ALTER COLUMN xxx SET  DEFAULT 5
    FLUSH TABLE WITH READ LOCK
    # 通过操作系统命令交换.frm文件
    /var/lib/mysql/xxx# mv xxx.frm xxx_tmp.frm
-   mv xxx_new.frm xxx.frm
+mv xxx_new.frm xxx.frm
    mv xxx_tmp xxx_new.frm
-   #解锁
+#解锁
    UNLOCK TABLES
    ```
-
+   
    ### B -Tree组合索引的限制
-
+   
    1. 如果不是按索引的第一个开始查找，则无法使用
    2. 不能跳过索引中的列
    3. 如果有范围查询，则其右边所有列都无法使用索引优化查找。列如 `where name = 'xxx'  and address like 'j%' and age = 10` 这个查询只能使用索引前两列

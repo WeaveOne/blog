@@ -1,8 +1,17 @@
-# 记一次事务commit成功后阻塞问题
+title: "记一次事务commit成功后阻塞问题"
+date: 2019-07-28 10:48:16
+categories: 问题记录
+tags: [mycat,java]
+
+----
+
+
 
 起因：在使用mycat中间件进行update多个库时，启动事务commit后数据成功被修改，但是程序被堵塞无法返回。
 
 问题：使用 jcmd PID Thread.print 查看线程堆栈信息分析最终堵塞的位置。
+
+<!-- more -->
 
 ```shell
 "http-nio-8080-exec-2" #22 daemon prio=5 os_prio=0 tid=0x00007fc54459d800 nid=0x23 runnable [0x00007fc4ea9f5000]

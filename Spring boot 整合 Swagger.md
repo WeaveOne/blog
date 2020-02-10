@@ -1,4 +1,11 @@
-# Spring boot 整合 Swagger
+title: "Spring boot 整合 Swagger"
+date: 2019-07-28 10:48:16
+categories: java
+tags: [spring boot, swagger]
+
+----
+
+
 
 #### 本文github位置：<https://github.com/WillVi/springboot-swagger2-demo>
 
@@ -25,6 +32,8 @@
     <version>2.6.1</version>
 </dependency>
 ```
+
+<!-- more -->
 
 ### 注意事项：
 
